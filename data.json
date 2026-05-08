@@ -1,0 +1,91 @@
+[
+  {
+    "id": "f1",
+    "name": "User Authentication",
+    "category": "Main Functions",
+    "description": "Secure login and registration system",
+    "status": "In progress",
+    "startDate": "2026-05-01",
+    "endDate": "2026-05-15",
+    "tasks": [
+      {
+        "id": "t1",
+        "name": "Design UI",
+        "status": "Not started",
+        "percentComplete": 0,
+        "startDate": "2026-05-01",
+        "endDate": "2026-05-05"
+      },
+      {
+        "id": "t2",
+        "name": "Implement JWT",
+        "status": "Not started",
+        "percentComplete": 0,
+        "startDate": "2026-05-06",
+        "endDate": "2026-05-15"
+      }
+    ]
+  },
+  {
+    "id": "f2",
+    "name": "Dashboard UI",
+    "category": "Main Functions",
+    "description": "Main analytical views and charts",
+    "status": "In progress",
+    "startDate": "2026-05-01",
+    "endDate": "2026-05-20",
+    "tasks": [
+      {
+        "id": "t3",
+        "name": "Create layout",
+        "status": "Done",
+        "percentComplete": 100,
+        "startDate": "2026-05-01",
+        "endDate": "2026-05-05"
+      },
+      {
+        "id": "t4",
+        "name": "Add charts",
+        "status": "In progress",
+        "percentComplete": 50,
+        "startDate": "2026-05-06",
+        "endDate": "2026-05-15"
+      },
+      {
+        "id": "t5",
+        "name": "Responsive fixes",
+        "status": "Not started",
+        "percentComplete": 0,
+        "startDate": "2026-05-16",
+        "endDate": "2026-05-20"
+      }
+    ]
+  },
+  {
+    "id": "f3",
+    "name": "Payment Integration",
+    "category": "Project Scope",
+    "description": "Stripe and PayPal gateway implementation",
+    "status": "Done",
+    "startDate": "2026-04-20",
+    "endDate": "2026-04-30"
+  },
+  {
+    "id": "f4",
+    "name": "Cloud Infra Setup",
+    "category": "Deployment",
+    "description": "Provisioning AWS/GCP resources using Terraform",
+    "status": "In progress",
+    "startDate": "2026-05-10",
+    "endDate": "2026-05-25"
+  },
+  {
+    "id": "f5",
+    "name": "React Lifecycle Hook",
+    "category": "Technical Stack",
+    "description": "Custom hooks for state management optimization",
+    "status": "Not started",
+    "startDate": "2026-06-01",
+    "endDate": "2026-06-10"
+  }
+]

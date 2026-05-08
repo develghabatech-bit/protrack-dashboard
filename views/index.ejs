@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTRACK // DASHBOARD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .logo-box { background-color: black; border-radius: 4px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
+        .input-search { border-radius: 9999px; background-color: #f8fafc; border: 1px solid #e2e8f0; }
+        .header-line { height: 2px; width: 100%; margin-top: 12px; margin-bottom: 24px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-900 overflow-x-hidden selection:bg-slate-900 selection:text-white">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="logo-box">
+                <span class="text-white font-black italic text-sm">P</span>
+            </div>
+            <h1 class="text-lg font-black italic tracking-tighter text-slate-800">PROTRACK // DASHBOARD</h1>
+        </div>
+
+        <div class="flex-1 max-w-2xl px-12">
+            <div class="relative">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="searchInput" placeholder="Search by name or task..." class="input-search w-full py-2.5 pl-11 pr-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-100 transition-all placeholder:text-slate-400">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-[8px] font-bold text-slate-300 uppercase leading-none mb-1">Storage Mode</p>
+                <p class="text-[9px] font-black italic <%= dbStatus.mode === 'mongodb' ? 'text-green-600' : 'text-amber-500' %> uppercase tracking-wider">
+                    <%= dbStatus.mode === 'mongodb' ? 'ATLAS DATABASE' : 'LOCAL (NO PERSISTENCE)' %>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            <!-- Column 01: Main Functions -->
+            <section id="column-01">
+                <div class="flex items-end justify-between mb-2">
+                    <div>
+                        <h2 class="text-xl font-black italic text-[#0f172a] leading-tight">01 // MAIN FUNCTIONS</h2>
+                        <p class="text-[9px] font-bold text-slate-300 uppercase tracking-widest mt-1">Desired functionalities to be developed</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="flex flex-col items-center gap-1">
+                            <button onclick="downloadTemplate('Main Functions')" class="text-[8px] font-black text-slate-300 hover:text-slate-600 flex items-center gap-1 uppercase">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                Template
+                            </button>
+                            <label class="text-[8px] font-black text-slate-300 hover:text-slate-600 flex items-center gap-1 uppercase cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                                Import
+                                <input type="file" class="hidden" accept=".csv" onchange="handleImport(event, 'Main Functions')">
+                            </label>
+                        </div>
+                        <button onclick="openModal('Main Functions')" class="bg-white border text-slate-800 border-slate-200 px-4 py-2.5 rounded-lg text-[11px] font-black tracking-tight flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            ADD FUNCTION
+                        </button>
+                    </div>
+                </div>
+                <div class="header-line bg-black"></div>
+
+                <% const mainFuncs = functionalities.filter(f => f.category === 'Main Functions'); %>
+                <% if (mainFuncs.length === 0) { %>
+                    <div class="border-2 border-dashed border-slate-100 rounded-[2rem] aspect-[16/9] flex flex-col items-center justify-center gap-4 opacity-50">
+                        <div class="w-12 h-12 rounded-full border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-200">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        </div>
+                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">Roadmap is clear</p>
+                    </div>
+                <% } else { %>
+                    <div class="grid grid-cols-1 gap-6">
+                        <% mainFuncs.forEach(func => { %>
+                            <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-slate-200 transition-all group relative card-item" data-name="<%= func.name %>">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-1.5 h-6 bg-slate-900 rounded-full"></div>
+                                        <div>
+                                            <h3 class="text-base font-black tracking-tight"><%= func.name %></h3>
+                                            <p class="text-[10px] font-bold text-slate-300 uppercase font-mono tracking-widest"><%= func.id %></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onclick="openModal('Main Functions', '<%= func.id %>')" class="p-2 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-slate-900 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                        </button>
+                                        <button onclick="deleteFunctionality('<%= func.id %>')" class="p-2 hover:bg-red-50 rounded-lg text-slate-300 hover:text-red-500 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-slate-400 text-xs leading-relaxed mb-6"><%= func.description %></p>
+                                <div class="flex items-center justify-between border-t border-slate-50 pt-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] font-black text-slate-200 uppercase tracking-widest font-mono"><%= func.startDate %></span>
+                                        <span class="w-2 h-[1px] bg-slate-100"></span>
+                                        <span class="text-[9px] font-black text-slate-200 uppercase tracking-widest font-mono"><%= func.endDate %></span>
+                                    </div>
+                                    <button onclick="startDevelopment('<%= func.id %>')" class="text-[9px] font-black uppercase text-slate-900 border-b-2 border-slate-900 hover:pb-1 transition-all italic">Start Phase</button>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- Column 02: Project Scope -->
+            <section id="column-02">
+                <div class="flex items-end justify-between mb-2">
+                    <div>
+                        <h2 class="text-xl font-black italic text-[#2563eb] leading-tight">02 // PROJECT SCOPE</h2>
+                        <p class="text-[9px] font-bold text-slate-300 uppercase tracking-widest mt-1">Status: Finished or In-progress</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="flex flex-col items-center gap-1">
+                            <button onclick="downloadTemplate('Project Scope')" class="text-[8px] font-black text-slate-300 hover:text-slate-600 flex items-center gap-1 uppercase">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                Template
+                            </button>
+                            <label class="text-[8px] font-black text-slate-300 hover:text-slate-600 flex items-center gap-1 uppercase cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                                Import
+                                <input type="file" class="hidden" accept=".csv" onchange="handleImport(event, 'Project Scope')">
+                            </label>
+                        </div>
+                        <button onclick="openModal('Project Scope')" class="bg-[#2563eb] text-white px-5 py-2.5 rounded-lg text-[11px] font-black tracking-tight flex items-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            ADD TO SCOPE
+                        </button>
+                    </div>
+                </div>
+                <div class="header-line bg-[#2563eb]"></div>
+
+                <% const scopeFuncs = functionalities.filter(f => f.category === 'Project Scope'); %>
+                <% if (scopeFuncs.length === 0) { %>
+                    <div class="border-2 border-dashed border-blue-50 rounded-[2rem] aspect-[16/9] flex flex-col items-center justify-center gap-4 opacity-50">
+                        <div class="w-12 h-12 rounded-full border-2 border-dashed border-blue-100 flex items-center justify-center text-blue-100">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                        <p class="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em]">No active execution detected</p>
+                    </div>
+                <% } else { %>
+                    <div class="grid grid-cols-1 gap-6">
+                        <% scopeFuncs.forEach(func => { 
+                            const subtasks = func.subtasks || [];
+                            const completedCount = subtasks.filter(t => t.completed).length;
+                            const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : (func.status === 'Completed' ? 100 : 0);
+                        %>
+                            <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:border-blue-100 transition-all group relative card-item" data-name="<%= func.name %>">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                        <div>
+                                            <h3 class="text-base font-black tracking-tight"><%= func.name %></h3>
+                                            <p class="text-[10px] font-bold text-slate-300 uppercase font-mono tracking-widest"><%= func.id %></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <div class="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter <%= progress === 100 ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600' %>">
+                                            <%= progress === 100 ? 'COMPLETED' : 'IN PROGRESS' %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-slate-400 text-xs leading-relaxed mb-6"><%= func.description %></p>
+                                
+                                <% if (subtasks.length > 0) { %>
+                                    <div class="mb-6 space-y-2">
+                                        <% subtasks.slice(0, 3).forEach(task => { %>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-1 h-1 rounded-full <%= task.completed ? 'bg-green-400' : 'bg-slate-200' %>"></div>
+                                                <span class="text-[10px] font-medium <%= task.completed ? 'text-slate-400 line-through' : 'text-slate-600' %>"><%= task.name %></span>
+                                            </div>
+                                        <% }) %>
+                                        <% if (subtasks.length > 3) { %>
+                                            <p class="text-[9px] font-bold text-slate-300 uppercase">And <%= subtasks.length - 3 %> more tasks...</p>
+                                        <% } %>
+                                    </div>
+                                <% } %>
+
+                                <div class="pt-4 flex items-center justify-between border-t border-slate-50">
+                                    <div class="flex-1 flex items-center gap-4 mr-6">
+                                        <div class="flex-1 h-2 bg-slate-50 rounded-full overflow-hidden">
+                                            <div class="h-full <%= progress === 100 ? 'bg-green-500' : 'bg-blue-500' %> rounded-full transition-all duration-1000" style="width: <%= progress %>%"></div>
+                                        </div>
+                                        <span class="text-[9px] font-black text-slate-400"><%= progress %>%</span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                         <button onclick="openModal('Project Scope', '<%= func.id %>')" class="p-2 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-slate-900 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                        </button>
+                                        <button onclick="deleteFunctionality('<%= func.id %>')" class="p-2 hover:bg-red-50 rounded-lg text-slate-300 hover:text-red-500 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-[4px] opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl scale-95 transition-all duration-500 ease-out flex flex-col max-h-[90vh]" id="modalContent">
+            <div class="flex justify-between items-center mb-8 pb-6 border-b border-slate-50">
+                <div>
+                    <h2 class="text-xl font-black italic tracking-tighter" id="modalTitle">ADD NEW UNIT</h2>
+                    <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest mt-1">Sync node to project lattice</p>
+                </div>
+                <button onclick="closeModal()" class="p-3 hover:bg-slate-50 rounded-2xl transition-colors text-slate-300 hover:text-slate-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="funcForm" onsubmit="handleFormSubmit(event)" class="space-y-6 overflow-y-auto pr-4 custom-scrollbar">
+                <input type="hidden" name="id" id="formId">
+                <input type="hidden" name="category" id="formCategory">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[9px] font-black text-slate-300 uppercase tracking-widest block">Unit Name</label>
+                        <input type="text" name="name" id="formName" required class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-slate-900 focus:outline-none font-bold text-sm tracking-tight transition-all">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-300 uppercase tracking-widest block">Initiate</label>
+                            <input type="date" name="startDate" id="formStartDate" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-slate-900 focus:outline-none font-mono font-bold text-[10px]">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-300 uppercase tracking-widest block">Deadline</label>
+                            <input type="date" name="endDate" id="formEndDate" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-slate-900 focus:outline-none font-mono font-bold text-[10px]">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[9px] font-black text-slate-300 uppercase tracking-widest block">Overview</label>
+                    <textarea name="description" id="formDescription" rows="2" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-slate-900 focus:outline-none font-medium text-xs leading-relaxed transition-all"></textarea>
+                </div>
+
+                <!-- Subtasks Section -->
+                <div id="subtasksSection" class="pt-6 border-t border-slate-50">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Subtask Management</label>
+                        <button type="button" onclick="addSubtask()" class="text-[9px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                            Add Task
+                        </button>
+                    </div>
+                    <div id="subtasksList" class="space-y-3">
+                        <!-- Subtasks will be injected here -->
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-200 mt-8 hover:bg-slate-800 transition-all active:scale-[0.98]">
+                    Sync with roadmap
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const functionalities = <%- JSON.stringify(functionalities) %>;
+        let currentSubtasks = [];
+
+        function openModal(category = 'Main Functions', id = null) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            const form = document.getElementById('funcForm');
+            const title = document.getElementById('modalTitle');
+            const subtasksSection = document.getElementById('subtasksSection');
+            
+            document.getElementById('formCategory').value = category;
+            currentSubtasks = [];
+            
+            // Subtasks only for Project Scope
+            subtasksSection.style.display = category === 'Project Scope' ? 'block' : 'none';
+
+            if (id) {
+                const func = functionalities.find(f => f.id == id);
+                document.getElementById('formId').value = func.id;
+                document.getElementById('formName').value = func.name;
+                document.getElementById('formDescription').value = func.description;
+                document.getElementById('formStartDate').value = func.startDate;
+                document.getElementById('formEndDate').value = func.endDate;
+                currentSubtasks = func.subtasks || [];
+                title.innerText = 'SYNC COMPONENT';
+            } else {
+                form.reset();
+                document.getElementById('formId').value = '';
+                title.innerText = 'ADD NEW UNIT';
+            }
+
+            renderSubtasks();
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            content.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function addSubtask(name = '') {
+            currentSubtasks.push({ id: Date.now().toString(), name: name, completed: false });
+            renderSubtasks();
+        }
+
+        function toggleSubtask(id) {
+            currentSubtasks = currentSubtasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            renderSubtasks();
+        }
+
+        function removeSubtask(id) {
+            currentSubtasks = currentSubtasks.filter(t => t.id !== id);
+            renderSubtasks();
+        }
+
+        function onSubtaskChange(id, value) {
+            currentSubtasks = currentSubtasks.map(t => t.id === id ? { ...t, name: value } : t);
+        }
+
+        function renderSubtasks() {
+            const list = document.getElementById('subtasksList');
+            list.innerHTML = currentSubtasks.map(t => `
+                <div class="flex items-center gap-3 bg-slate-50 border border-slate-100 p-3 rounded-xl group/task">
+                    <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleSubtask('${t.id}')" 
+                        class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                    <input type="text" value="${t.name}" oninput="onSubtaskChange('${t.id}', this.value)" 
+                        placeholder="Task description..."
+                        class="flex-1 bg-transparent border-none text-[11px] font-bold focus:ring-0 p-0 ${t.completed ? 'text-slate-400 line-through' : 'text-slate-700'}">
+                    <button type="button" onclick="removeSubtask('${t.id}')" class="opacity-0 group-hover/task:opacity-100 p-1 text-slate-300 hover:text-red-500 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+            `).join('');
+            
+            if (currentSubtasks.length === 0) {
+                list.innerHTML = '<p class="text-[9px] font-bold text-slate-300 italic text-center py-4">No tasks allocated.</p>';
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.subtasks = JSON.stringify(currentSubtasks);
+            
+            try {
+                const response = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    closeModal();
+                    // Brief delay to show animation before reload
+                    setTimeout(() => window.location.reload(), 100);
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function deleteFunctionality(id) {
+            if (!confirm('Proceed with unit extraction from roadmap?')) return;
+            try {
+                const response = await fetch(`/api/delete/${id}`, { method: 'DELETE' });
+                if (response.ok) window.location.reload();
+            } catch (err) { console.error(err); }
+        }
+
+        async function startDevelopment(id) {
+            try {
+                const response = await fetch(`/api/update-status/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'In progress', category: 'Project Scope' })
+                });
+                if (response.ok) window.location.reload();
+            } catch (err) { console.error(err); }
+        }
+
+        // CSV Template Generation
+        function downloadTemplate(cat) {
+            const row = 'name,description,startDate,endDate\n';
+            const example = `Sample ${cat},Automated description,2026-05-01,2026-06-01\n`;
+            const blob = new Blob([row + example], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `template_${cat.toLowerCase().replace(' ', '_')}.csv`;
+            a.click();
+        }
+
+        // CSV Import Logic
+        async function handleImport(event, category) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const text = e.target.result;
+                const rows = text.split('\n').filter(row => row.trim() !== '');
+                const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+                
+                const items = rows.slice(1).map(row => {
+                    const values = row.split(',').map(v => v.trim());
+                    const obj = { category: category, status: 'Not started', subtasks: [] };
+                    headers.forEach((header, index) => {
+                        if (values[index]) obj[header] = values[index];
+                    });
+                    return obj;
+                });
+
+                if (items.length > 0) {
+                    try {
+                        const response = await fetch('/api/import', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ items })
+                        });
+                        if (response.ok) {
+                            alert(`Imported ${items.length} items to ${category}`);
+                            window.location.reload();
+                        }
+                    } catch (err) {
+                        console.error('Import failed:', err);
+                        alert('Import failed. Check console for details.');
+                    }
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.card-item').forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                card.style.display = name.includes(term) ? 'block' : 'none';
+            });
+        });
+
+        // Close on escape
+        window.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+    </script>
+</body>
+</html>
